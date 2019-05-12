@@ -19,7 +19,7 @@ Vue.prototype.$dialog = {
 // 判断移动端的设备类型，分为android和ios
 const isAndroid = window.navigator.appVersion.match(/android/gi);
 const isIPhone = window.navigator.appVersion.match(/iphone/gi);
-const pixelRatio = window.devicePixelRatio;
+const pixelRatio = Math.floor(window.devicePixelRatio);
 const htmlObj = document.documentElement;
 let dpr = 1;
 if (isIPhone) {
