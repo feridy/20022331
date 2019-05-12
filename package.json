@@ -13,6 +13,7 @@
     "epic-spinners": "^1.1.0",
     "qs": "^6.7.0",
     "vue": "^2.6.10",
+    "vue-router": "^3.0.3",
     "vue-ydui": "^1.2.6"
   },
   "devDependencies": {
@@ -24,6 +25,8 @@
     "compression-webpack-plugin": "^2.0.0",
     "eslint": "^5.16.0",
     "eslint-plugin-vue": "^5.0.0",
+    "less": "^3.9.0",
+    "less-loader": "^5.0.0",
     "postcss-px2rem": "^0.3.0",
     "uglifyjs-webpack-plugin": "^2.1.2",
     "vue-template-compiler": "^2.5.21",

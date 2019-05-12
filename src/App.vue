@@ -16,7 +16,6 @@
       <div class="rhombus"></div>
       <div class="rhombus"></div>
     </div>
-    <input type="number">
   </div>
 
 

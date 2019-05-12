@@ -6,6 +6,7 @@ import {
 import App from './App.vue';
 import './css/mycss.css';
 import './fonts/iconfont.css';
+import router from './router';
 
 Vue.config.productionTip = false;
 Vue.prototype.$dialog = {
@@ -32,5 +33,6 @@ if (isAndroid) {
 htmlObj.setAttribute('dpr', dpr);
 
 new Vue({
+  router,
   render: h => h(App),
 }).$mount('#app');
