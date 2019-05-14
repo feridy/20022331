@@ -21,7 +21,7 @@ module.exports = {
     config.resolve.alias
       .set('assets', '@/assets')
       .set('components', '@/components')
-      .set('view', '@/view')
+      .set('views', '@/views')
       .set('style', '@/style')
       .set('api', '@/axois/api')
       .set('store', '@/store');
@@ -36,7 +36,7 @@ module.exports = {
       config.optimization.minimizer[0].options.terserOptions.compress.drop_console = true;
       config.optimization.minimizer[0].options.terserOptions.compress.drop_debugger = true;
       config.optimization.minimizer[0].options.terserOptions.compress.pure_funcs = ['console.log'];
-      // 开启gzip压缩
+      // 分析工具
       config.plugins.push(
         new BundleAnalyzerPlugin({
           //  可以是`server`，`static`或`disabled`。
@@ -69,6 +69,7 @@ module.exports = {
           logLevel: 'info', // 日志级别。可以是'信息'，'警告'，'错误'或'沉默'。
         }),
       );
+      // 开启gzip压缩
       const productionGzipExtensions = /\.(js|css|json|txt|html|ico|svg)(\?.*)?$/i;
       config.plugins.push(
         new CompressionWebpackPlugin({

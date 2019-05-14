@@ -14,7 +14,7 @@ module.exports = {
     'func-names': 'off',
     'import/no-unresolved': 'off',
     'import/extensions': 'off',
-    'no-param-reassign' : 'off',
+    'no-param-reassign': 'off',
   },
   parserOptions: {
     parser: 'babel-eslint',
