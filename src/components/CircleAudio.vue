@@ -53,6 +53,25 @@ export default {
     HollowDotsSpinner,
     PlayingIcon,
   },
+  created() {
+    console.log(this.$route);
+    this.progress = 0;
+  },
+  watch: {
+    // 解决切换页面，音频还播放的问题
+    $route: {
+      handler(value) {
+        const audio = this.$root.$el.querySelector('#circle-audio-id');
+        if (audio) {
+          audio.pause();
+          audio.currentTime = 0;
+        }
+        // console.log(audio);
+        return value;
+      },
+      deep: true,
+    },
+  },
   data() {
     return {
       progress: 0,
@@ -173,6 +192,9 @@ export default {
       // 给audio添加相关事件
       console.log(currentAudio);
     },
+  },
+  destroyed() {
+    console.log('destroyed');
   },
 };
 </script>
