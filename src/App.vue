@@ -1,16 +1,18 @@
-/* eslint-disable import/extensions */
 <template>
   <div id="app">
-    <router-view></router-view>
+    <keep-alive>
+      <router-view v-if="$route.meta.keepAlive"></router-view>
+    </keep-alive>
+    <router-view v-if="!$route.meta.keepAlive"></router-view>
   </div>
-
-
 </template>
 
 <script>
-
 export default {
   name: 'app',
+  created() {
+    console.log(this.$route);
+  },
 };
 </script>
 
