@@ -1,9 +1,9 @@
 import { get } from './http';
 
 const getExhibitionList = params => get('exhibition_list', params);
-const getConsole = (params) => { console.log(params); };
+const getMapList = params => get('map_list', params);
 
 export {
   getExhibitionList,
-  getConsole,
+  getMapList,
 };

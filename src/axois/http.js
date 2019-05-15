@@ -22,7 +22,9 @@ axios.interceptors.request.use(
 // axios response拦截器
 axios.interceptors.response.use(
   (response) => {
-    Loading.close();
+    setTimeout(() => {
+      Loading.close();
+    }, 500);
     if (response.status === 200 && response.data.status === 1) {
       return Promise.resolve(response);
     }
@@ -43,9 +45,9 @@ axios.interceptors.response.use(
         // 404请求不存在
       case 404:
         Toast({
-          mes: '网络请求不存在',
+          mes: '请求不存在',
           icon: 'error',
-          timeout: 2000,
+          timeout: 5000,
         });
         break;
       default:

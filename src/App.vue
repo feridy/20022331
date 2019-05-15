@@ -11,7 +11,7 @@
 export default {
   name: 'app',
   created() {
-    console.log(this.$route);
+    // console.log(this.$route);
   },
 };
 </script>

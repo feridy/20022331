@@ -1,6 +1,7 @@
 <template>
   <div class="home">
     <img alt="Vue logo" src="../assets/logo.png">
+    <img src="../assets/marker-icon-2x.png" alt="">
     <normal-audio></normal-audio>
     <circle-audio :audioSource="audioSource[0]"></circle-audio>
     <circle-audio :audioSource="audioSource[1]"></circle-audio>
