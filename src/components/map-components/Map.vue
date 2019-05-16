@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 <template>
   <div class="main-container">
     <h1>这是一个标题</h1>
@@ -20,6 +21,8 @@ export default {
       Lmap: null, // 地图的对象-L.map 父级对象
       cuerrMap: null,
       baseMap: null, // 底层地图
+      // mapCurrentZoom: 0, // 地图初始的缩放等级，用来控制marker的缩放
+      // imageZoom: 1,
       // iconClass: null, // marker的图片类,基本的保持一致的图标类
     };
   },
@@ -33,7 +36,7 @@ export default {
   mounted() {
     this.Lmap = this.mapInit(this.$refs.map, {
       maxBounds: [[0, 0], [3467, 1165]],
-      maxZoom: 2,
+      maxZoom: 1,
       minZoom: -2,
       zoom: 0,
     });
@@ -45,15 +48,59 @@ export default {
     // eslint-disable-next-line global-require
     console.log(this.Lmap.getCenter());
     // eslint-disable-next-line global-require
-    const marker = L.marker([582.5, 1733.5], { icon: this.myDivIcon({}, 'http://hdwx.museum-edu.cn/uploadfiles/exhibt/20190122/201901221049378519.png') });
-    const marker2 = L.marker([500, 1733.5], { icon: this.myDivIcon({}, 'http://hdwx.museum-edu.cn/uploadfiles/exhibt/20190122/201901221049378519.png') });
+    const marker = this.myMarker([900, 400], {
+      iconUrl:
+        'http://hdwx.museum-edu.cn/uploadfiles/exhibt/20190122/201901221049378519.png',
+    });
+    const marker2 = L.marker([500, 1733.5], {
+      icon: this.myDivIcon(
+        'http://hdwx.museum-edu.cn/uploadfiles/exhibt/20190122/201901221049378519.png',
+      ),
+    });
     // this.baseMap.setUrl('http://hdwx.museum-edu.cn/uploadfiles/svgmap/20190416/201904161456235018.svg');
     marker.addTo(this.Lmap);
     marker2.addTo(this.Lmap);
     console.log(marker);
-    marker.addEventListener('click', (e) => {
-      console.log(e);
-      console.log(marker.getElement().querySelector('.my-div-icon-marker'));
+    marker2.addEventListener('click', () => {
+      // eslint-disable-next-line no-underscore-dangle
+      marker2._popup.openPopup();
+      console.log(marker2);
+    });
+
+    const popup = this.mypopup();
+    marker2.bindPopup(popup);
+    // 获取zoom, market和地图一起缩放，有一定的比值来进行缩放
+    // this.mapCurrentZoom = this.Lmap.getZoom();
+    this.Lmap.addEventListener('zoom', () => {
+      //   const zoom = this.Lmap.getZoom();
+      //   this.Lmap.eachLayer((item) => {
+      //     console.log(this.Lmap.getBounds());
+      //     if (item.dragging) {
+      //       // eslint-disable-next-line no-underscore-dangle
+      //       const iconElement = item._icon;
+      //       console.log(zoom);
+      //       // imageZoom 0 - 2;
+      //       if (this.Lmap.getMinZoom() === zoom) {
+      //         this.imageZoom = 1;
+      //       } else if (this.mapCurrentZoom - zoom > 0) {
+      //         this.imageZoom -= 0.1;
+      //       } else {
+      //         this.imageZoom += 0.5;
+      //       }
+      //       // 针对默认的图标
+      //       if (iconElement.nodeName === 'IMG') {
+      //         const { transform } = iconElement.style;
+      //         iconElement.style.transform = `${transform} scale(${this.imageZoom})`;
+      //       } else {
+      //         iconElement.firstChild.style.transform = `scale(${this.imageZoom})`;
+      //       }
+      //       this.mapCurrentZoom = zoom;
+      //       console.dir(iconElement);
+      //     }
+      //   });
+      // });
+      // this.Lmap.eachLayer((item) => {
+      //   console.log(item);
     });
   },
   methods: {
@@ -80,6 +127,8 @@ export default {
         minZoom: 0,
         maxZoom: 0,
         zoom: 0,
+        // zoomSnap: 0.5,
+        // zoomDelta: 0.5,
         center: [0, 0],
       };
       Object.assign(initOption, option);
@@ -111,6 +160,9 @@ export default {
       } else {
         this.baseMap = this.renderImageOverlay(url);
       }
+      if (this.Lmap.hasLayer(this.baseMap)) {
+        this.Lmap.removeLayer(this.baseMap);
+      }
       this.baseMap.addTo(this.Lmap);
       // 回调函数
       if (typeof callback === 'function') {
@@ -119,10 +171,10 @@ export default {
     },
     // 清除所有的marker和puope
     /*
-    * all： {true, false},
-    * 用来判断是否保留底图
-    */
-    removeLayer(all) {
+     * all： {true, false},
+     * 用来判断是否保留底图
+     */
+    removeLayer(all = true) {
       // 可以使用这个来清除所有的图层
       if (all) {
         this.Lmap.eachLayer((item) => {
@@ -144,22 +196,23 @@ export default {
       // 因为在leafLet中全是px 所以要手动将rem => px
       const veiwSize = document.documentElement.offsetWidth;
       const designSize = 750;
-      const baseFontSize = veiwSize / designSize * 100;
+      const baseFontSize = (veiwSize / designSize) * 100;
       const options = {
         // eslint-disable-next-line global-require
+        iconUrl: require('assets/marker-icon-2x.png'),
+        // eslint-disable-next-line global-require
         shadowUrl: require('assets/marker-shadow.png'),
-        iconSize: [0.3 * baseFontSize, 0.4 * baseFontSize],
-        shadowSize: [0.20 * baseFontSize, 0.3 * baseFontSize],
+        iconSize: [0.4 * baseFontSize, 0.6 * baseFontSize],
+        shadowSize: [0.3 * baseFontSize, 0.4 * baseFontSize],
         iconAnchor: [0.2 * baseFontSize, 0.4 * baseFontSize],
         shadowAnchor: [0.11 * baseFontSize, 0.27 * baseFontSize],
         popupAnchor: [-3, -76],
       };
-      console.log(baseFontSize);
       Object.assign(options, option);
       return new L.Icon(options);
     },
     // Marker DivIcon
-    myDivIcon(option = {}, iconsrc = '') {
+    myDivIcon(iconsrc = '', option = {}) {
       const options = {
         html: `<div class="my-div-icon-marker">
                   <img src="${iconsrc}">
@@ -167,7 +220,63 @@ export default {
         bgPos: [0, 0],
       };
       Object.assign(options, option);
-      return new L.DivIcon(options);
+      const divIcon = new L.DivIcon(options);
+      return divIcon;
+    },
+    // 封装地图的marker方法
+    /*
+    * option: {
+      divOption: {
+        html: ""
+      },
+      defualtOption: {
+        defualtIcon
+      }
+    }
+    * point 为marker的点位为[x, y]的形式
+    */
+    myMarker(point, iconImage = '', option = {}) {
+      let icon = {};
+      if (iconImage && !(iconImage instanceof Object)) {
+        icon = this.myDivIcon(iconImage, option);
+      } else {
+        icon = this.myDefualtIcon(iconImage || option);
+      }
+      const points = this.transformxyToyx(point);
+      const marker = L.marker(points, { icon });
+      return marker;
+    },
+    // popup 方法
+    mypopup(name = '', image = '', content = '', id = 0, option = {}) {
+      const options = {
+        offset: [0, -40],
+        className: 'popup-wapper',
+        // maxWidth: 1400,
+      };
+      Object.assign(options, option);
+      const popup = L.popup(options);
+      const popupContent = `<div class='popup-container'>
+                                  <h3 class='popup-title'>${name}</h3>
+                                  <div class='popup-content'>
+                                    <img src='${image}'>
+                                    <div class='popup-right'>
+                                      <p>${content}</p>
+                                      <div class='popup-btn'>
+                                        <div class='audio-play'>
+                                          <span class='iconfont icon-ziyuanldpi'></span>
+                                          <span>暂停</span>
+                                        </div>
+                                        <a href='#/guide/audio_detail/${id}'>
+                                          <span class='iconfont .icon-tuwenxiangqing'></span>
+                                          <span>详情</span>
+                                        </a>
+                                      </div>
+                                    </div>
+                                  </div>
+                             </div>`;
+      popup.setContent(popupContent);
+
+      return popup;
     },
   },
 };
@@ -199,12 +308,13 @@ export default {
     z-index: 1001;
   }
   .map-container {
+    // height: 800px;
     height: 100vh;
     background-color: aqua;
   }
   /deep/ .my-div-icon-marker {
     position: absolute;
-    margin-left: -48px;;
+    margin-left: -48px;
     margin-top: -116px;
     transform: scale(1);
     width: 120px;
@@ -217,6 +327,76 @@ export default {
   /deep/ .leaflet-div-icon {
     background: transparent;
     border: none;
+  }
+  /deep/ .popup-wapper {
+    width: 580px;
+    height: 280px;
+  }
+  /deep/ .popup-container {
+    width: 540px;
+    height: 280px;
+    padding: 20px;
+    .popup-title {
+      font-weight: 500;
+      font-size: 28px;
+      color: #301a0d;
+    }
+    .popup-content {
+      margin-top: 20px;
+      display: flex;
+      flex-flow: row nowrap;
+      img {
+        width: 170px;
+        height: 170px;
+      }
+      .popup-right {
+        box-sizing: border-box;
+        width: calc(100% - 130px);
+        padding-left: 20px;
+        font-size: 24px;
+        display: flex;
+        flex-flow: column nowrap;
+        justify-content: space-between;
+        p {
+          padding: 0;
+          margin: 0;
+          line-height: 1.25;
+        }
+        .popup-btn {
+          display: flex;
+          justify-content: space-between;
+          div,
+          a {
+            // display: block;
+            width: 120px;
+            height: 48px;
+            border-radius: 30px;
+            background-color: #d49630;
+            position: relative;
+            span {
+              display: inline-block;
+              color: #fff;
+              line-height: 48px;
+              &:first-child {
+                position: absolute;
+                top: 50%;
+                left: 16px;
+                margin-top: -16px;
+                width: 32px;
+                height: 32px;
+                text-align: center;
+                line-height: 32px;
+                font-size: 28px;
+                // background-color: #261710;
+              }
+              &:last-child {
+                margin-left: 28px;
+              }
+            }
+          }
+        }
+      }
+    }
   }
 }
 </style>

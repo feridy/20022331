@@ -1,7 +1,6 @@
 <template>
   <div class="map-container">
     <my-map></my-map>
-    <button v-on:click="getMap(0)">获取地图按键</button>
   </div>
 </template>
 
