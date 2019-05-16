@@ -33,8 +33,9 @@ export default {
   mounted() {
     this.Lmap = this.mapInit(this.$refs.map, {
       maxBounds: [[0, 0], [3467, 1165]],
-      maxZoom: 1,
+      maxZoom: 2,
       minZoom: -2,
+      zoom: 0,
     });
     this.baseMap = this.renderImageOverlay(
       'http://leaflet.marsgis.cn/forleaflet/examples/crs-simple/uqm_map_full.png',
@@ -42,8 +43,18 @@ export default {
     );
     this.baseMap.addTo(this.Lmap);
     // eslint-disable-next-line global-require
-    L.marker([200, 800], { icon: this.myIcon({ iconUrl: require('assets/marker-icon-2x.png') }) }).addTo(this.Lmap);
+    console.log(this.Lmap.getCenter());
+    // eslint-disable-next-line global-require
+    const marker = L.marker([582.5, 1733.5], { icon: this.myDivIcon({}, 'http://hdwx.museum-edu.cn/uploadfiles/exhibt/20190122/201901221049378519.png') });
+    const marker2 = L.marker([500, 1733.5], { icon: this.myDivIcon({}, 'http://hdwx.museum-edu.cn/uploadfiles/exhibt/20190122/201901221049378519.png') });
     // this.baseMap.setUrl('http://hdwx.museum-edu.cn/uploadfiles/svgmap/20190416/201904161456235018.svg');
+    marker.addTo(this.Lmap);
+    marker2.addTo(this.Lmap);
+    console.log(marker);
+    marker.addEventListener('click', (e) => {
+      console.log(e);
+      console.log(marker.getElement().querySelector('.my-div-icon-marker'));
+    });
   },
   methods: {
     // 转化地图的点位(x,y) => (y,x)
@@ -84,14 +95,15 @@ export default {
       return baseMap;
     },
     // 切换底层地图, 这改变的是底层图片，Lmap没有变化
-    changeMap(url) {
+    changeMap(url, callback) {
+      this.removeLayer(true);
       if (this.baseMap) {
         this.baseMap.setUrl(url);
         // 设置中心点的变化为了解决谷歌浏览切换地址，不切换地图的问题
-        const center = this.Lmap.getCenter();
-        const [X, Y] = [center.lat, center.lng];
-        console.log(center);
-        this.Lmap.setView([X - 10, Y - 10]);
+        // const center = this.Lmap.getCenter();
+        // const [X, Y] = [center.lat, center.lng];
+        // console.log(center);
+        // this.Lmap = this.Lmap.setView([X - 10, Y - 10]);
         this.$nextTick(() => {
           const imageElemet = this.baseMap.getElement();
           console.log(imageElemet);
@@ -99,19 +111,63 @@ export default {
       } else {
         this.baseMap = this.renderImageOverlay(url);
       }
+      this.baseMap.addTo(this.Lmap);
+      // 回调函数
+      if (typeof callback === 'function') {
+        callback();
+      }
     },
-    // Marker图标
-    myIcon(option = {}) {
+    // 清除所有的marker和puope
+    /*
+    * all： {true, false},
+    * 用来判断是否保留底图
+    */
+    removeLayer(all) {
+      // 可以使用这个来清除所有的图层
+      if (all) {
+        this.Lmap.eachLayer((item) => {
+          this.Lmap.removeLayer(item);
+        });
+        return this.Lmap;
+      }
+      this.Lmap.eachLayer((item) => {
+        if (item !== this.baseMap) {
+          this.Lmap.removeLayer(item);
+        }
+      });
+
+      return this.Lmap;
+    },
+    // Marker图标的类
+    myDefualtIcon(option = {}) {
+      // 初始自带的一些选项
+      // 因为在leafLet中全是px 所以要手动将rem => px
+      const veiwSize = document.documentElement.offsetWidth;
+      const designSize = 750;
+      const baseFontSize = veiwSize / designSize * 100;
       const options = {
-        shadowUrl: 'assets/marker-shadow.png',
-        iconSize: [38, 95],
-        shadowSize: [50, 64],
-        iconAnchor: [22, 94],
-        shadowAnchor: [4, 62],
+        // eslint-disable-next-line global-require
+        shadowUrl: require('assets/marker-shadow.png'),
+        iconSize: [0.3 * baseFontSize, 0.4 * baseFontSize],
+        shadowSize: [0.20 * baseFontSize, 0.3 * baseFontSize],
+        iconAnchor: [0.2 * baseFontSize, 0.4 * baseFontSize],
+        shadowAnchor: [0.11 * baseFontSize, 0.27 * baseFontSize],
         popupAnchor: [-3, -76],
       };
+      console.log(baseFontSize);
       Object.assign(options, option);
       return new L.Icon(options);
+    },
+    // Marker DivIcon
+    myDivIcon(option = {}, iconsrc = '') {
+      const options = {
+        html: `<div class="my-div-icon-marker">
+                  <img src="${iconsrc}">
+              </div>`,
+        bgPos: [0, 0],
+      };
+      Object.assign(options, option);
+      return new L.DivIcon(options);
     },
   },
 };
@@ -145,6 +201,22 @@ export default {
   .map-container {
     height: 100vh;
     background-color: aqua;
+  }
+  /deep/ .my-div-icon-marker {
+    position: absolute;
+    margin-left: -48px;;
+    margin-top: -116px;
+    transform: scale(1);
+    width: 120px;
+    height: 140px;
+    > img {
+      width: 100%;
+      height: 100%;
+    }
+  }
+  /deep/ .leaflet-div-icon {
+    background: transparent;
+    border: none;
   }
 }
 </style>
