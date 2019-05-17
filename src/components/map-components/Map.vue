@@ -70,38 +70,6 @@ export default {
     const popup = this.mypopup();
     marker2.bindPopup(popup);
     // 获取zoom, market和地图一起缩放，有一定的比值来进行缩放
-    // this.mapCurrentZoom = this.Lmap.getZoom();
-    this.Lmap.addEventListener('zoom', () => {
-      //   const zoom = this.Lmap.getZoom();
-      //   this.Lmap.eachLayer((item) => {
-      //     console.log(this.Lmap.getBounds());
-      //     if (item.dragging) {
-      //       // eslint-disable-next-line no-underscore-dangle
-      //       const iconElement = item._icon;
-      //       console.log(zoom);
-      //       // imageZoom 0 - 2;
-      //       if (this.Lmap.getMinZoom() === zoom) {
-      //         this.imageZoom = 1;
-      //       } else if (this.mapCurrentZoom - zoom > 0) {
-      //         this.imageZoom -= 0.1;
-      //       } else {
-      //         this.imageZoom += 0.5;
-      //       }
-      //       // 针对默认的图标
-      //       if (iconElement.nodeName === 'IMG') {
-      //         const { transform } = iconElement.style;
-      //         iconElement.style.transform = `${transform} scale(${this.imageZoom})`;
-      //       } else {
-      //         iconElement.firstChild.style.transform = `scale(${this.imageZoom})`;
-      //       }
-      //       this.mapCurrentZoom = zoom;
-      //       console.dir(iconElement);
-      //     }
-      //   });
-      // });
-      // this.Lmap.eachLayer((item) => {
-      //   console.log(item);
-    });
   },
   methods: {
     // 转化地图的点位(x,y) => (y,x)
@@ -145,7 +113,11 @@ export default {
     },
     // 切换底层地图, 这改变的是底层图片，Lmap没有变化
     changeMap(url, callback) {
-      this.removeLayer(true);
+      const imageElement = this.baseMap.getElement();
+      if (imageElement.src === url) {
+        return;
+      }
+      this.myRemoveLayer(true);
       if (this.baseMap) {
         this.baseMap.setUrl(url);
         // 设置中心点的变化为了解决谷歌浏览切换地址，不切换地图的问题
@@ -153,10 +125,6 @@ export default {
         // const [X, Y] = [center.lat, center.lng];
         // console.log(center);
         // this.Lmap = this.Lmap.setView([X - 10, Y - 10]);
-        this.$nextTick(() => {
-          const imageElemet = this.baseMap.getElement();
-          console.log(imageElemet);
-        });
       } else {
         this.baseMap = this.renderImageOverlay(url);
       }
@@ -168,13 +136,15 @@ export default {
       if (typeof callback === 'function') {
         callback();
       }
+
+      console.log('changeMap');
     },
     // 清除所有的marker和puope
     /*
      * all： {true, false},
      * 用来判断是否保留底图
      */
-    removeLayer(all = true) {
+    myRemoveLayer(all = true) {
       // 可以使用这个来清除所有的图层
       if (all) {
         this.Lmap.eachLayer((item) => {
