@@ -8,6 +8,7 @@
     >切换地图</button>
     <!-- map container -->
     <div ref="map" class="map-container"></div>
+    <audio src ref="audio"></audio>
   </div>
 </template>
 
@@ -61,14 +62,15 @@ export default {
     marker.addTo(this.Lmap);
     marker2.addTo(this.Lmap);
     console.log(marker);
+    const popup = this.mypopup({ name: '你好', content: '2222' });
+    marker2.bindPopup(popup);
     marker2.addEventListener('click', () => {
       // eslint-disable-next-line no-underscore-dangle
       marker2._popup.openPopup();
       console.log(marker2);
+      console.log(popup.getElement());
     });
 
-    const popup = this.mypopup('你好');
-    marker2.bindPopup(popup);
     // 获取zoom, market和地图一起缩放，有一定的比值来进行缩放
   },
   methods: {
@@ -217,7 +219,16 @@ export default {
       return marker;
     },
     // popup 方法
-    mypopup(name = '', image = '', content = '', id = 0, option = {}) {
+    /*
+     * exhibt = {
+     *   name: '',
+     *    image: '',
+     *    content: '',
+     *    id: 0,
+     *    audio: '',
+     *  }
+     */
+    mypopup(exhibt = {}, option = {}, callback) {
       const options = {
         offset: [0, -40],
         className: 'popup-wapper',
@@ -225,18 +236,26 @@ export default {
       };
       Object.assign(options, option);
       const popup = L.popup(options);
+      const initExhibt = {
+        name: '',
+        image: '',
+        content: '',
+        id: 0,
+        audioSrc: '',
+      };
+      const obj = Object.assign(initExhibt, exhibt);
       const popupContent = `<div class='popup-container'>
-                                  <h3 class='popup-title'>${name}</h3>
+                                  <h3 class='popup-title'>${obj.name}</h3>
                                   <div class='popup-content'>
-                                    <img src='${image}'>
+                                    <img src='${obj.image}'>
                                     <div class='popup-right'>
-                                      <p>${content}</p>
+                                      <p>${obj.content}</p>
                                       <div class='popup-btn'>
                                         <div class='audio-play'>
-                                          <span class='iconfont icon-ziyuanldpi'></span>
+                                          <span class='iconfont icon-kefu'></span>
                                           <span>暂停</span>
                                         </div>
-                                        <a href='#/guide/audio_detail/${id}'>
+                                        <a href='#/guide/audio_detail/${obj.id}'>
                                           <span class='iconfont icon-tuwenxiangqing'></span>
                                           <span>详情</span>
                                         </a>
@@ -245,7 +264,27 @@ export default {
                                   </div>
                              </div>`;
       popup.setContent(popupContent);
-
+      // 如果有回调函数，将回调函数绑定到添加到图层上时的事件
+      if (typeof callback === 'function') {
+        popup.addEventListener('add', callback);
+        return popup;
+      }
+      // 如果没有回调函数，就根据默认的选项HTML，来完成最常见的播放音频事件
+      popup.addEventListener('add', () => {
+        // 获取到播放按钮
+        const popupElement = popup.getElement();
+        const audioPlayElement = popupElement.querySelector('.audio-play');
+        const { audio } = this.$refs;
+        audio.src = obj.audioSrc;
+        audioPlayElement.addEventListener('click', () => {
+          if (audio.paused) {
+            audio.play();
+            const { classList } = audioPlayElement.querySelector('.iconfont');
+            classList.remove('icon-kefu');
+            classList.add('icon-ziyuanldpi');
+          }
+        });
+      });
       return popup;
     },
   },
