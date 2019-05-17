@@ -67,7 +67,7 @@ export default {
       console.log(marker2);
     });
 
-    const popup = this.mypopup();
+    const popup = this.mypopup('你好');
     marker2.bindPopup(popup);
     // 获取zoom, market和地图一起缩放，有一定的比值来进行缩放
   },
@@ -237,7 +237,7 @@ export default {
                                           <span>暂停</span>
                                         </div>
                                         <a href='#/guide/audio_detail/${id}'>
-                                          <span class='iconfont .icon-tuwenxiangqing'></span>
+                                          <span class='iconfont icon-tuwenxiangqing'></span>
                                           <span>详情</span>
                                         </a>
                                       </div>
@@ -301,66 +301,66 @@ export default {
   /deep/ .popup-wapper {
     width: 580px;
     height: 280px;
-  }
-  /deep/ .popup-container {
-    width: 540px;
-    height: 280px;
-    padding: 20px;
-    .popup-title {
-      font-weight: 500;
-      font-size: 28px;
-      color: #301a0d;
+    /deep/ .leaflet-popup-close-button {
+      font: 30px/40px Tahoma, Verdana, sans-serif;
+      width: 50px;
+      height: 40px;
+      right: 10px;
     }
-    .popup-content {
-      margin-top: 20px;
-      display: flex;
-      flex-flow: row nowrap;
-      img {
-        width: 170px;
-        height: 170px;
+    /deep/ .popup-container {
+      width: 550px;
+      height: 280px;
+      padding: 10px;
+      .popup-title {
+        width: 100%;
+        font-weight: 500;
+        font-size: 30px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        color: #301a0d;
       }
-      .popup-right {
-        box-sizing: border-box;
-        width: calc(100% - 130px);
-        padding-left: 20px;
-        font-size: 24px;
+      .popup-content {
+        margin-top: 20px;
         display: flex;
-        flex-flow: column nowrap;
-        justify-content: space-between;
-        p {
-          padding: 0;
-          margin: 0;
-          line-height: 1.25;
+        flex-flow: row nowrap;
+        img {
+          width: 170px;
+          height: 170px;
         }
-        .popup-btn {
+        .popup-right {
+          box-sizing: border-box;
+          width: calc(100% - 130px);
+          padding-left: 20px;
+          font-size: 24px;
           display: flex;
+          flex-flow: column nowrap;
           justify-content: space-between;
-          div,
-          a {
-            // display: block;
-            width: 120px;
-            height: 48px;
-            border-radius: 30px;
-            background-color: #d49630;
-            position: relative;
-            span {
-              display: inline-block;
-              color: #fff;
-              line-height: 48px;
-              &:first-child {
-                position: absolute;
-                top: 50%;
-                left: 16px;
-                margin-top: -16px;
-                width: 32px;
-                height: 32px;
-                text-align: center;
-                line-height: 32px;
-                font-size: 28px;
-                // background-color: #261710;
-              }
-              &:last-child {
-                margin-left: 28px;
+          p {
+            padding: 0;
+            margin: 0;
+            line-height: 1.25;
+          }
+          .popup-btn {
+            display: flex;
+            justify-content: space-between;
+            font-size: 24px;
+            div,
+            a {
+              padding: 0 10px;
+              width: 130px;
+              height: 50px;
+              border-radius: 30px;
+              background-color: #d49630;
+              display: flex;
+              justify-content: space-around;
+              span {
+                color: #fff;
+                line-height: 50px;
+                &:first-child {
+                  // padding-top: 2px;
+                  font-size: 30px;
+                }
               }
             }
           }
